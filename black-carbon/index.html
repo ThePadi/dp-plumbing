@@ -630,15 +630,15 @@ footer{background:var(--cf)}
               <option>Just planning for now</option>
             </select></label>
             <div class="full enq-btns">
-              <button class="btn btn-solid" type="submit" data-via="wa">Send on WhatsApp <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M3 12h17M14 6l6 6-6 6"/></svg></button>
-              <button class="btn" type="submit" data-via="sms">Send by text</button>
+              <button class="btn btn-solid" type="submit" data-via="sms">Send as a text message <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M3 12h17M14 6l6 6-6 6"/></svg></button>
+              <button class="btn enq-mail" type="submit" data-via="mail" hidden>Send by email</button>
             </div>
           </form>
         </div>
         <div class="enq-thanks" hidden>
           <h3>Thank you for your <em>enquiry.</em></h3>
           <p>I am a little busy on jobs at the moment, but I will get back to you as soon as I can.</p>
-          <p>If your message did not open, call or text 07970 797326.</p>
+          <p>If your messages app did not open, call or text 07970 797326, or email dan@dpplumbing.uk.</p>
         </div>
       </div>
     </div>
@@ -818,9 +818,11 @@ footer{background:var(--cf)}
   window.addEventListener('resize',function(){W=0});
 })();
 (function(){
-  /* enquiry: opens WhatsApp or text with the details filled in */
+  /* enquiry: opens a text message (or email on computers) with the details filled in */
   var f=document.getElementById('enq-form'); if(!f) return;
-  var via='wa';
+  var via='sms';
+  var desktop=window.matchMedia&&matchMedia('(hover: hover) and (pointer: fine)').matches;
+  var mb=f.querySelector('.enq-mail'); if(mb&&desktop) mb.hidden=false;
   [].forEach.call(f.querySelectorAll('[data-via]'),function(b){b.addEventListener('click',function(){via=b.getAttribute('data-via')})});
   f.addEventListener('submit',function(e){
     e.preventDefault();
@@ -828,8 +830,8 @@ footer{background:var(--cf)}
     ['name','where','what','when'].forEach(function(n){var el=f.elements[n],val=(el.value||'').trim();el.classList.toggle('err',!val);if(!val) ok=false;v[n]=val});
     if(!ok){var first=f.querySelector('.err');if(first) first.focus();return}
     var msg='Hello Dan, my name is '+v.name+'.\nWhere: '+v.where+'\nWork needed: '+v.what+'\nWhen: '+v.when+'\n(Sent from your website)';
-    var url=via==='sms'?'sms:+447970797326'+(/iPhone|iPad|Mac/.test(navigator.userAgent)?'&':'?')+'body='+encodeURIComponent(msg):'https://wa.me/447970797326?text='+encodeURIComponent(msg);
-    var a=document.createElement('a');a.href=url;if(via!=='sms'){a.target='_blank';a.rel='noopener'}document.body.appendChild(a);a.click();a.remove();
+    var url=via==='mail'?'mailto:dan@dpplumbing.uk?subject='+encodeURIComponent('Website enquiry from '+v.name)+'&body='+encodeURIComponent(msg):'sms:+447970797326'+(/iPhone|iPad|Mac/.test(navigator.userAgent)?'&':'?')+'body='+encodeURIComponent(msg);
+    var a=document.createElement('a');a.href=url;document.body.appendChild(a);a.click();a.remove();
     var box=f.closest('.enq');box.querySelector('.enq-body').hidden=true;box.querySelector('.enq-thanks').hidden=false;
   });
 })();
